@@ -1,3 +1,4 @@
 /.tox/
 *.pyc
 *~
+/pip-wheel-metadata/
