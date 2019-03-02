@@ -120,7 +120,7 @@ class SSHConfig:
 
         for key in options:
             # if the value starts with ~ assume it's a path and expand it
-            if options[key].startswith("~"):
+            if isinstance(options[key], str) and options[key].startswith("~"):
                 options[key] = os.path.expanduser(options[key])
 
             if key == "port":
