@@ -13,11 +13,11 @@ I want to keep using the old Fabric 1.14 APIs with Python3:
 
 - Fabric 2 changed the APIs
 - Fabric3 (a fork of Fabric 1.14 for Python3) has some issues with Python3
-- Maybe it's better to start from scratch with a smaller project scope and focusing on Python3 only
+- Maybe it's better to start from scratch with smaller project scope and focusing on Python3 only
 
 ## Example usage
 
-Adapting code that use Fabric 1.x should be easy enough, but some features will be missing and some
+Adapting code that uses Fabric 1.x should be easy enough, but some features will be missing and some
 will behave differently.
 
 ``` python
@@ -54,6 +54,10 @@ conn.disconnect()
 You can also use Cluster mode when you want to run the same command on several hosts in parallel:
 
 ``` python
+from fox.cluster import Cluster
+
 cluster = Cluster("app1.example.com", "app2.example.com", "app3.example.com")
 cluster.run("sleep $((1 + RANDOM % 5)) && hostname")
 ```
+
+**NOTE** throttling still has to be implemented. All the commands will be run at once.
