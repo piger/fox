@@ -47,8 +47,18 @@ class Connection:
     - path to agent (asyncssh read "$SSH_AUTH_SOCK" by default)
     - ProxyJump or ProxyCommand (!!!)
     """
-    def __init__(self, hostname, username, port, private_key=None, password=None, agent_path=None,
-                 tunnel=None, nickname=None):
+
+    def __init__(
+        self,
+        hostname,
+        username,
+        port,
+        private_key=None,
+        password=None,
+        agent_path=None,
+        tunnel=None,
+        nickname=None,
+    ):
         self.hostname = hostname
         self.username = username
         self.port = port
@@ -82,8 +92,9 @@ class Connection:
         output = "".join(list(buf))
         return output
 
-    async def _run(self, command, sudo=False, cd=None, pty=False, environ=None, echo=True,
-                   **kwargs) -> CommandResult:
+    async def _run(
+        self, command, sudo=False, cd=None, pty=False, environ=None, echo=True, **kwargs
+    ) -> CommandResult:
         """Run a shell command on the remote host"""
 
         if self._connection is None:
@@ -98,7 +109,7 @@ class Connection:
 
         if sudo:
             command = f"{env_command}{command}"
-            command = f'sudo -S -p {shlex.quote(env.sudo_prompt)} $SHELL -c {shlex.quote(command)}'
+            command = f"sudo -S -p {shlex.quote(env.sudo_prompt)} $SHELL -c {shlex.quote(command)}"
         else:
             command = f"{env_command}{command}"
 
@@ -107,10 +118,7 @@ class Connection:
 
         args = {}
         if pty:
-            args.update({
-                "term_type": env.term_type,
-                "term_size": env.term_size,
-            })
+            args.update({"term_type": env.term_type, "term_size": env.term_size})
 
         async with self._connection.create_process(command, **args) as proc:
             stdout, stderr = await asyncio.gather(
@@ -128,29 +136,18 @@ class Connection:
 
     # use the event loop
     def run(self, command, pty=True, cd=None, environ=None) -> CommandResult:
-        kwargs = {
-            "pty": pty,
-            "cd": cd,
-            "environ": environ,
-        }
+        kwargs = {"pty": pty, "cd": cd, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
 
     # use the event loop
     def sudo(self, command, pty=True, cd=None, environ=None) -> CommandResult:
-        kwargs = {
-            "pty": pty,
-            "cd": cd,
-            "sudo": True,
-            "environ": environ,
-        }
+        kwargs = {"pty": pty, "cd": cd, "sudo": True, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
 
     async def _connect(self):
         log.info(f"Connecting to {self.hostname}")
 
-        args = {
-            "username": self.username,
-        }
+        args = {"username": self.username}
 
         if self.tunnel:
             log.info(f"Connecting to tunnel {self.tunnel}")
@@ -165,9 +162,7 @@ class Connection:
         elif self.private_key:
             args["client_keys"] = [self.private_key]
 
-        self._connection = await asyncssh.connect(
-            self.hostname, self.port, **args
-        )
+        self._connection = await asyncssh.connect(self.hostname, self.port, **args)
 
     # use the event loop
     def disconnect(self):
@@ -210,10 +205,7 @@ class Connection:
                 bar.update(1)
 
             await sftp_client.get(
-                remotefile,
-                localfile,
-                progress_handler=_update_bar,
-                block_size=block_size
+                remotefile, localfile, progress_handler=_update_bar, block_size=block_size
             )
             bar.close()
 
@@ -270,10 +262,7 @@ class Connection:
                 bar.update(1)
 
             await sftp_client.put(
-                localfile,
-                remotefile,
-                progress_handler=_update_bar,
-                block_size=block_size
+                localfile, remotefile, progress_handler=_update_bar, block_size=block_size
             )
             bar.close()
 

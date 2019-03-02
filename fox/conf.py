@@ -29,19 +29,20 @@ class Environment(MutableMapping):
         raise NotImplementedError()
 
 
-env = Environment({
-    "host_string": None,
-    "term_type": "vt100",
-    "term_size": (80, 24),
-    "use_ssh_config": True,
-    "ssh_config_path": os.path.expanduser("~/.ssh/config"),
-    "sudo_password": None,
-    "sudo_prompt": "sudo password:",
-
-    "username": None,
-    "port": None,
-    "private_key": None,
-})
+env = Environment(
+    {
+        "host_string": None,
+        "term_type": "vt100",
+        "term_size": (80, 24),
+        "use_ssh_config": True,
+        "ssh_config_path": os.path.expanduser("~/.ssh/config"),
+        "sudo_password": None,
+        "sudo_prompt": "sudo password:",
+        "username": None,
+        "port": None,
+        "private_key": None,
+    }
+)
 
 
 _ssh_config = None
@@ -51,9 +52,7 @@ def options_to_connect(hostname):
     """Returns all the SSH options needed to connect to `hostname`"""
 
     # these options will override the ones from ssh_config
-    options_from_env = {
-        "hostname": hostname,
-    }
+    options_from_env = {"hostname": hostname}
     # NOTE: ssh_config use the "User" word instead of "Username"!
     if env.username is not None:
         options_from_env["user"] = env.username

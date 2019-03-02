@@ -70,7 +70,5 @@ async def _local(command, **kwargs):
 
 
 def local(command, cd=None):
-    kwargs = {
-        "cd": cd,
-    }
+    kwargs = {"cd": cd}
     return run_in_loop(_local(command, **kwargs))

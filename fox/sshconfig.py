@@ -9,10 +9,7 @@ class Error(Exception):
     pass
 
 
-SSH_EXPAND_OPTIONS = [
-    "proxycommand",
-    "controlpath",
-]
+SSH_EXPAND_OPTIONS = ["proxycommand", "controlpath"]
 
 
 def match(hostname, patterns):

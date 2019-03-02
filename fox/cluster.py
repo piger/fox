@@ -14,6 +14,7 @@ class Cluster:
     - canary run (do a canary run on the first host before doing the remanining)
     - exit after % of hosts failed
     """
+
     def __init__(self, *hosts):
         self.hosts = hosts
         self._connections = [_get_connection(host, use_cache=False) for host in self.hosts]
@@ -27,12 +28,12 @@ class Cluster:
 
         result = await asyncio.gather(
             *[self._do(qresults, connection, command) for connection in self._connections],
-            self._update_bar(bar, len(self.hosts), qresults)
+            self._update_bar(bar, len(self.hosts), qresults),
         )
 
         command_outputs = result[-1]
         for connection, output in command_outputs:
-            print(f"output from {connection}: {output.stdout}", end='')
+            print(f"output from {connection}: {output.stdout}", end="")
 
     async def _do(self, queue, connection, command):
         try:
@@ -67,15 +68,16 @@ async def _connect_pipes(source, source_command, destination, destination_comman
     await source_conn._connect()
     await dest_conn._connect()
 
-    async with source_conn._connection.create_process(source_command) as source_proc, dest_conn._connection.create_process(destination_command, stdin=source_proc.stdout) as dest_proc:
+    async with source_conn._connection.create_process(
+        source_command
+    ) as source_proc, dest_conn._connection.create_process(
+        destination_command, stdin=source_proc.stdout
+    ) as dest_proc:
         stdout, stderr = await asyncio.gather(
             dest_conn._read_from(dest_proc.stdout, dest_proc.stdin, echo=True),
             dest_conn._read_from(dest_proc.stderr, dest_proc.stdin, echo=True),
         )
 
     return CommandResult(
-        command=command,
-        exit_code=dest_proc.exit_status,
-        stdout=stdout,
-        stderr=stderr,
+        command=command, exit_code=dest_proc.exit_status, stdout=stdout, stderr=stderr
     )

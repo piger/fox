@@ -19,8 +19,8 @@ class CommandResult:
 
 
 def shell_escape(cmdline: str) -> str:
-    for char in ('"', '$', '`'):
-        cmdline = cmdline.replace(char, '\\%s' % char)
+    for char in ('"', "$", "`"):
+        cmdline = cmdline.replace(char, "\\%s" % char)
     return cmdline
 
 
@@ -40,7 +40,7 @@ def prepare_environment(variables):
 
     exports = []
     for key, value in variables.items():
-        exports.append(f'{key}={shlex.quote(value)}')
+        exports.append(f"{key}={shlex.quote(value)}")
     return f"export {' '.join(exports)} && "
 
 
@@ -68,7 +68,7 @@ def split_lines(data: str):
         start = i + 1
 
     if i + 1 < length:
-        return (lines, data[i+1:])
+        return (lines, data[i + 1 :])
 
     return (lines, "")
 
