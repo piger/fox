@@ -1,7 +1,7 @@
 import asyncio
 import tqdm
 from .connection import _get_connection
-from .utils import run_in_loop
+from .utils import run_in_loop, CommandResult
 
 
 class Cluster:
@@ -55,3 +55,27 @@ class Cluster:
         bar.close()
 
         return results
+
+
+def connect_pipes(source, source_command, destination, destination_command):
+    return run_in_loop(_connect_pipes(source, source_command, destination, destination_command))
+
+
+async def _connect_pipes(source, source_command, destination, destination_command):
+    source_conn = _get_connection(source, use_cache=False)
+    dest_conn = _get_connection(destination, use_cache=False)
+    await source_conn._connect()
+    await dest_conn._connect()
+
+    async with source_conn._connection.create_process(source_command) as source_proc, dest_conn._connection.create_process(destination_command, stdin=source_proc.stdout) as dest_proc:
+        stdout, stderr = await asyncio.gather(
+            dest_conn._read_from(dest_proc.stdout, dest_proc.stdin, echo=True),
+            dest_conn._read_from(dest_proc.stderr, dest_proc.stdin, echo=True),
+        )
+
+    return CommandResult(
+        command=command,
+        exit_code=dest_proc.exit_status,
+        stdout=stdout,
+        stderr=stderr,
+    )
