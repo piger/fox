@@ -68,7 +68,9 @@ def split_lines(data: str):
         start = i + 1
 
     if i + 1 < length:
-        return (lines, data[i + 1 :])
+        # fmt: off
+        return (lines, data[i+1:])
+        # fmt: on
 
     return (lines, "")
 
