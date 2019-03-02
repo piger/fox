@@ -1,5 +1,6 @@
 import asyncio
 import tqdm
+import asyncssh
 from .connection import _get_connection
 from .utils import run_in_loop, CommandResult
 
@@ -69,7 +70,7 @@ async def _connect_pipes(source, source_command, destination, destination_comman
     await dest_conn._connect()
 
     async with source_conn._connection.create_process(
-        source_command
+        source_command, stderr=asyncssh.STDOUT
     ) as source_proc, dest_conn._connection.create_process(
         destination_command, stdin=source_proc.stdout
     ) as dest_proc:
@@ -79,5 +80,5 @@ async def _connect_pipes(source, source_command, destination, destination_comman
         )
 
     return CommandResult(
-        command=command, exit_code=dest_proc.exit_status, stdout=stdout, stderr=stderr
+        command=destination_command, exit_code=dest_proc.exit_status, stdout=stdout, stderr=stderr
     )
