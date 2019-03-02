@@ -1,5 +1,7 @@
 # 🦊 (Fox)
 
+[![Build Status](https://travis-ci.org/piger/fox.svg?branch=master)](https://travis-ci.org/piger/fox)
+
 🦊 (Fox) is an _experimental_ alternative implementation of _some_ of the
 [Fabric 1.14](http://docs.fabfile.org/en/1.14/) APIs.
 

@@ -312,8 +312,7 @@ def _get_connection(name=None, use_cache=True):
         # here we delete stale Connections objects.
         if conn.connected:
             return conn
-        else:
-            del _connections_cache[name]
+        del _connections_cache[name]
 
     ssh_options = options_to_connect(name)
 

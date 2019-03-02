@@ -6,9 +6,10 @@ authors = ["Daniel Kertesz <daniel@spatof.org>"]
 license = "BSD-2-Clause"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 asyncssh = "^1.15"
 tqdm = "^4.31"
+dataclasses = { version = "^0.6", python = "~3.6" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.3"
