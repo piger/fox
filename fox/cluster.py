@@ -1,6 +1,6 @@
 import asyncio
 import tqdm
-from .connection import Connection, _get_connection
+from .connection import _get_connection
 from .utils import run_in_loop
 
 
@@ -23,7 +23,6 @@ class Cluster:
 
     async def _run(self, command):
         bar = tqdm.tqdm(total=len(self.hosts))
-        results = []
         qresults = asyncio.Queue()
 
         result = await asyncio.gather(

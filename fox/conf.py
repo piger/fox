@@ -1,5 +1,4 @@
 import os
-import getpass
 from collections.abc import MutableMapping
 from .sshconfig import SSHConfig
 

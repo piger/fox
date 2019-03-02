@@ -9,8 +9,7 @@ import atexit
 import tqdm
 import asyncssh
 from .conf import env, options_to_connect
-from .utils import shell_escape, split_lines, run_in_loop, read_from_stream, CommandResult
-from .utils import prepare_environment
+from .utils import run_in_loop, CommandResult, prepare_environment
 
 
 # disable annoying warnings (we can't fix the problems in 3rd party libs)
@@ -218,7 +217,7 @@ class Connection:
             )
             bar.close()
 
-        except (OSError, asyncssh.SFTPError) as err:
+        except (OSError, asyncssh.SFTPError):
             raise
 
     # use the event loop
@@ -246,7 +245,7 @@ class Connection:
             bar.close()
 
             return b"".join(data)
-        except (OSError, asyncssh.SFTPError) as err:
+        except (OSError, asyncssh.SFTPError):
             raise
 
     # use the event loop
@@ -278,7 +277,7 @@ class Connection:
             )
             bar.close()
 
-        except (OSError, asyncssh.SFTPError) as err:
+        except (OSError, asyncssh.SFTPError):
             raise
 
     # use the event loop
