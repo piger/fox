@@ -5,18 +5,18 @@ from .connection import _get_connection
 from .utils import CommandResult, read_from_stream, run_in_loop
 
 
-def run(command, pty=False, cd=None):
+def run(command, pty=False, cd=None) -> CommandResult:
     """Run a command on the current env.host_string remote host"""
 
     c = _get_connection(env.host_string)
-    c.run(command, pty, cd)
+    return c.run(command, pty, cd)
 
 
-def sudo(command, pty=False, cd=None):
+def sudo(command, pty=False, cd=None) -> CommandResult:
     """Run a command on the current env.host_string remote host with sudo"""
 
     c = _get_connection(env.host_string)
-    c.sudo(command, pty, cd)
+    return c.sudo(command, pty, cd)
 
 
 def get(remotefile, localfile):
@@ -39,7 +39,7 @@ def file_exists(remotefile) -> bool:
     return c.file_exists(remotefile)
 
 
-async def _local(command, **kwargs):
+async def _local(command, **kwargs) -> CommandResult:
     args = {
         "cwd": kwargs.get("cd"),
         "stdout": asyncio.subprocess.PIPE,
@@ -52,7 +52,7 @@ async def _local(command, **kwargs):
     # NOTES:
     # - this must not be called with shell=True; see:
     # https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.subprocess_exec
-    proc = await asyncio.create_subprocess_exec(*cmdline, **args)
+    proc = await asyncio.create_subprocess_exec(*cmdline, **args)  # type: ignore
     stdout, stderr = await asyncio.gather(
         read_from_stream(proc.stdout, proc.stdin, label, decode=True),
         read_from_stream(proc.stderr, proc.stdin, label, decode=True),
@@ -70,6 +70,6 @@ async def _local(command, **kwargs):
     )
 
 
-def local(command, cd=None):
+def local(command, cd=None) -> CommandResult:
     kwargs = {"cd": cd}
     return run_in_loop(_local(command, **kwargs))

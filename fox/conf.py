@@ -1,5 +1,6 @@
 import os
 from collections.abc import MutableMapping
+from typing import Any
 from .sshconfig import SSHConfig
 
 
@@ -7,10 +8,10 @@ class Environment(MutableMapping):
     def __init__(self, *args, **kwargs):
         self._storage = dict(*args, **kwargs)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self._storage[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any) -> None:
         self._storage[key] = value
 
     def __delitem__(self, key):
@@ -19,10 +20,10 @@ class Environment(MutableMapping):
     def __iter__(self):
         return iter(self._storage)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._storage)
 
-    def __getattr__(self, key):
+    def __getattr__(self, key) -> Any:
         if key in self._storage:
             return self._storage[key]
 

@@ -2,3 +2,4 @@
 *.pyc
 *~
 /pip-wheel-metadata/
+/.mypy_cache/

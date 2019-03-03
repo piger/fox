@@ -6,6 +6,7 @@ import asyncio
 import logging
 import collections
 import atexit
+from typing import Optional, Dict, Deque
 import tqdm
 import asyncssh
 from .conf import env, options_to_connect
@@ -20,7 +21,7 @@ log = logging.getLogger(__name__)
 
 # A cache of Connection objects indexed by *name* (not hostname!). We only cache connections creates
 # with the global run() and sudo() methods. Maybe the tunnels too?
-_connections_cache = {}
+_connections_cache: Dict[str, "Connection"] = {}
 
 
 def _clean_connections():
@@ -50,14 +51,14 @@ class Connection:
 
     def __init__(
         self,
-        hostname,
-        username,
-        port,
+        hostname: str,
+        username: str,
+        port: int,
         private_key=None,
-        password=None,
-        agent_path=None,
-        tunnel=None,
-        nickname=None,
+        password: Optional[str] = None,
+        agent_path: Optional[str] = None,
+        tunnel: Optional[str] = None,
+        nickname: Optional[str] = None,
     ):
         self.hostname = hostname
         self.username = username
@@ -70,11 +71,11 @@ class Connection:
             self.nickname = nickname
         else:
             self.nickname = self.hostname
-        self._connection = None
-        self._sftp_client = None
+        self._connection: Optional[asyncssh.SSHClientConnection] = None
+        self._sftp_client: Optional[asyncssh.SFTPClient] = None
 
     async def _read_from(self, stream, writer, maxlen=10, echo=True) -> str:
-        buf = collections.deque(maxlen=maxlen)
+        buf: Deque[str] = collections.deque(maxlen=maxlen)
         trail = ""
 
         while True:
@@ -111,7 +112,14 @@ class Connection:
         return output
 
     async def _run(
-        self, command, sudo=False, cd=None, pty=False, environ=None, echo=True, **kwargs
+        self,
+        command: str,
+        sudo=False,
+        cd: Optional[str] = None,
+        pty=False,
+        environ: Optional[Dict[str, str]] = None,
+        echo=True,
+        **kwargs,
     ) -> CommandResult:
         """Run a shell command on the remote host"""
 
@@ -140,7 +148,7 @@ class Connection:
         if pty:
             args.update({"term_type": env.term_type, "term_size": env.term_size})
 
-        async with self._connection.create_process(command, **args) as proc:
+        async with self._connection.create_process(command, **args) as proc:  # type: ignore
             stdout, stderr = await asyncio.gather(
                 self._read_from(proc.stdout, proc.stdin, echo=echo),
                 self._read_from(proc.stderr, proc.stdin, echo=echo),
@@ -212,7 +220,7 @@ class Connection:
             await self._connect()
 
         if self._sftp_client is None:
-            self._sftp_client = await self._connection.start_sftp_client()
+            self._sftp_client = await self._connection.start_sftp_client()  # type: ignore
         return self._sftp_client
 
     async def _get(self, remotefile, localfile):
@@ -307,11 +315,11 @@ class Connection:
         return await sftp_client.exists(remotefile)
 
     # use the event loop
-    def file_exists(self, remotefile):
+    def file_exists(self, remotefile) -> bool:
         return run_in_loop(self._file_exists(remotefile))
 
 
-def _get_connection(name=None, use_cache=True):
+def _get_connection(name=None, use_cache=True) -> Connection:
     """Get a connection for `name`.
 
     `name` does not need to be a FQDN; it can be a "nickname" from a SSH configuration file.
