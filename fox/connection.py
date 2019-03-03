@@ -84,7 +84,7 @@ class Connection:
             buf.append(data)
             if echo:
                 print(data, end="")
-            if data.endswith("sudo password:"):
+            if data.endswith(env.sudo_prompt):
                 if env.sudo_password is None:
                     env.sudo_password = getpass.getpass("Need password for sudo: ")
                 writer.write(f"{env.sudo_password}\n")
