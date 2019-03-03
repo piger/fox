@@ -45,6 +45,7 @@ async def _local(command, **kwargs):
         "stdout": asyncio.subprocess.PIPE,
         "stderr": asyncio.subprocess.PIPE,
     }
+    label = "*local*"
     original_command = command
     cmdline = shlex.split(command)
 
@@ -53,8 +54,8 @@ async def _local(command, **kwargs):
     # https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.subprocess_exec
     proc = await asyncio.create_subprocess_exec(*cmdline, **args)
     stdout, stderr = await asyncio.gather(
-        read_from_stream(proc.stdout, proc.stdin, decode=True),
-        read_from_stream(proc.stderr, proc.stdin, decode=True),
+        read_from_stream(proc.stdout, proc.stdin, label, decode=True),
+        read_from_stream(proc.stderr, proc.stdin, label, decode=True),
     )
 
     await proc.wait()

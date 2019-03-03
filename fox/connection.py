@@ -9,7 +9,7 @@ import atexit
 import tqdm
 import asyncssh
 from .conf import env, options_to_connect
-from .utils import run_in_loop, CommandResult, prepare_environment
+from .utils import run_in_loop, CommandResult, prepare_environment, split_lines
 
 
 # disable annoying warnings (we can't fix the problems in 3rd party libs)
@@ -75,19 +75,37 @@ class Connection:
 
     async def _read_from(self, stream, writer, maxlen=10, echo=True) -> str:
         buf = collections.deque(maxlen=maxlen)
+        trail = ""
 
         while True:
             data = await stream.read(1024)
             if data == "":
                 break
 
+            # everything gets stored in `buf` (within its limits)
             buf.append(data)
+
+            # handle previously unprinted output, if any
+            if trail:
+                data = trail + data
+                trail = ""
+
+            # split lines and keep any non-newline ended data
+            lines, rest = split_lines(data)
             if echo:
-                print(data, end="")
-            if data.endswith(env.sudo_prompt):
+                for line in lines:
+                    print(f"[{self.nickname}] {line}")
+
+            # if the last part of `data` contains the sudo prompt, handle it
+            if rest.endswith(env.sudo_prompt):
+                print(f"[{self.nickname}] {rest}")
+
                 if env.sudo_password is None:
                     env.sudo_password = getpass.getpass("Need password for sudo: ")
                 writer.write(f"{env.sudo_password}\n")
+            else:
+                if rest:
+                    trail += rest
 
         output = "".join(list(buf))
         return output
@@ -141,11 +159,13 @@ class Connection:
 
     # use the event loop
     def run(self, command, pty=True, cd=None, environ=None) -> CommandResult:
+        print(f"*{self.nickname}* Running: {command}")
         kwargs = {"pty": pty, "cd": cd, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
 
     # use the event loop
     def sudo(self, command, pty=True, cd=None, environ=None) -> CommandResult:
+        print(f"*{self.nickname}* - Sudo: {command}")
         kwargs = {"pty": pty, "cd": cd, "sudo": True, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
 

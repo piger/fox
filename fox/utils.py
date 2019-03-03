@@ -87,8 +87,9 @@ def run_in_loop(future):
     return result
 
 
-async def read_from_stream(stream, writer, maxlen=10, decode=False):
+async def read_from_stream(stream, writer, label, maxlen=10, decode=False, echo=True):
     buf = collections.deque(maxlen=maxlen)
+    trail = ""
 
     while True:
         data = await stream.read(1024)
@@ -98,7 +99,18 @@ async def read_from_stream(stream, writer, maxlen=10, decode=False):
             break
 
         buf.append(data)
-        print(data, end="")
+
+        if trail:
+            data = trail + data
+            trail = ""
+
+        lines, rest = split_lines(data)
+        if echo:
+            for line in lines:
+                print(f"[{label}] {line}")
+
+            if rest:
+                trail += rest
 
     output = "".join(list(buf))
     return output
