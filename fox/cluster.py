@@ -5,6 +5,15 @@ from .connection import _get_connection
 from .utils import run_in_loop, CommandResult
 
 
+async def _update_bar(bar, n, queue):
+    for _ in range(n):
+        result = await queue.get()
+        queue.task_done()
+        bar.update(1)
+
+    bar.close()
+
+
 class Cluster:
     """
     Cluster mode.
@@ -27,39 +36,31 @@ class Cluster:
         bar = tqdm.tqdm(total=len(self.hosts))
         qresults = asyncio.Queue()
 
-        result = await asyncio.gather(
+        results = await asyncio.gather(
             *[self._do(qresults, connection, command) for connection in self._connections],
-            self._update_bar(bar, len(self.hosts), qresults),
+            _update_bar(bar, len(self.hosts), qresults),
+            return_exceptions=True,
         )
-
-        command_outputs = result[-1]
-        for connection, output in command_outputs:
-            print(f"output from {connection}: {output.stdout}", end="")
+        for connection, result in results[:-1]:
+            print(f"output from {connection.nickname}: {result.stdout}", end="")
 
     async def _do(self, queue, connection, command):
         try:
             result = await connection._run(command, echo=False)
         except Exception as exc:
             print(f"task on {connection} failed: {exc}")
-            await queue.put((connection, None))
-        else:
-            await queue.put((connection, result))
+            result = None
 
-    async def _update_bar(self, bar, n, queue):
-        results = []
-
-        for _ in range(n):
-            result = await queue.get()
-            results.append(result)
-            queue.task_done()
-            bar.update(1)
-
-        bar.close()
-
-        return results
+        await queue.put(1)
+        return (connection, result)
 
 
 def connect_pipes(source, source_command, destination, destination_command):
+    """Connects processes on two connections with a pipe
+
+    Pipe stdout and stderr from a command executed on a source connection to stdin of a process on a
+    destination connection.
+    """
     return run_in_loop(_connect_pipes(source, source_command, destination, destination_command))
 
 
