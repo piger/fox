@@ -7,12 +7,12 @@ from dataclasses import dataclass
 @dataclass
 class CommandResult:
     command: str
+    actual_command: str
     exit_code: int
     stdout: str
     stderr: str
-    local: bool = False
+    hostname: str
     sudo: bool = False
-    actual_command: str = ""
 
     # NOTE: when running in a pty there is no stderr!
     def summary(self):

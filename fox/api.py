@@ -45,6 +45,7 @@ async def _local(command, **kwargs):
         "stdout": asyncio.subprocess.PIPE,
         "stderr": asyncio.subprocess.PIPE,
     }
+    original_command = command
     cmdline = shlex.split(command)
 
     # NOTES:
@@ -57,16 +58,15 @@ async def _local(command, **kwargs):
     )
 
     await proc.wait()
-    command_result = CommandResult(
-        command=command,
+    return CommandResult(
+        command=original_command,
+        actual_command=command,
         exit_code=proc.returncode,
         stdout=stdout,
         # if we use a pty this will be empty
         stderr=stderr,
-        local=True,
+        hostname="*local*",
     )
-
-    return command_result
 
 
 def local(command, cd=None):

@@ -130,11 +130,13 @@ class Connection:
 
         return CommandResult(
             command=original_command,
+            actual_command=command,
             exit_code=proc.exit_status,
             stdout=stdout,
             # if we use a pty this will be empty
             stderr=stderr,
-            actual_command=command,
+            hostname=self.nickname,
+            sudo=sudo,
         )
 
     # use the event loop

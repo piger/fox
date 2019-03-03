@@ -71,10 +71,7 @@ async def _connect_pipes(source, source_command, destination, destination_comman
     source_conn = _get_connection(source, use_cache=False)
     dest_conn = _get_connection(destination, use_cache=False)
 
-    await asyncio.gather(
-        source_conn._connect(),
-        dest_conn._connect(),
-    )
+    await asyncio.gather(source_conn._connect(), dest_conn._connect())
 
     async with source_conn._connection.create_process(
         source_command, stderr=asyncssh.STDOUT
@@ -87,5 +84,10 @@ async def _connect_pipes(source, source_command, destination, destination_comman
         )
 
     return CommandResult(
-        command=destination_command, exit_code=dest_proc.exit_status, stdout=stdout, stderr=stderr
+        command=destination_command,
+        actual_command=destination_command,
+        exit_code=dest_proc.exit_status,
+        stdout=stdout,
+        stderr=stderr,
+        hostname=destination,
     )
