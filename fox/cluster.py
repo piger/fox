@@ -7,7 +7,7 @@ from .utils import run_in_loop, CommandResult
 
 async def _update_bar(bar, n, queue):
     for _ in range(n):
-        result = await queue.get()
+        await queue.get()
         queue.task_done()
         bar.update(1)
 
@@ -34,11 +34,11 @@ class Cluster:
 
     async def _run(self, command):
         bar = tqdm.tqdm(total=len(self.hosts))
-        qresults = asyncio.Queue()
+        qbar = asyncio.Queue()
 
         results = await asyncio.gather(
-            *[self._do(qresults, connection, command) for connection in self._connections],
-            _update_bar(bar, len(self.hosts), qresults),
+            *[self._do(qbar, connection, command) for connection in self._connections],
+            _update_bar(bar, len(self.hosts), qbar),
             return_exceptions=True,
         )
         for connection, result in results[:-1]:
