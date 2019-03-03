@@ -100,6 +100,8 @@ class Connection:
         if self._connection is None:
             await self._connect()
 
+        original_command = command
+
         if cd:
             command = 'cd "{}" && {}'.format(cd, command)
 
@@ -127,11 +129,12 @@ class Connection:
             )
 
         return CommandResult(
-            command=command,
+            command=original_command,
             exit_code=proc.exit_status,
             stdout=stdout,
             # if we use a pty this will be empty
             stderr=stderr,
+            actual_command=command,
         )
 
     # use the event loop
@@ -147,7 +150,11 @@ class Connection:
     async def _connect(self):
         log.info(f"Connecting to {self.hostname}")
 
-        args = {"username": self.username}
+        args = {
+            "username": self.username,
+            # XXX handle known_hosts !
+            "known_hosts": None,
+        }
 
         if self.tunnel:
             log.info(f"Connecting to tunnel {self.tunnel}")

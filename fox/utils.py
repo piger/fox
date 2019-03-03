@@ -12,6 +12,7 @@ class CommandResult:
     stderr: str
     local: bool = False
     sudo: bool = False
+    actual_command: str = ""
 
     # NOTE: when running in a pty there is no stderr!
     def summary(self):
