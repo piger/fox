@@ -65,6 +65,7 @@ def split_lines(data: str):
         except ValueError:
             break
         line = data[start:i]
+        line.rstrip("\r")
         lines.append(line)
         start = i + 1
 
