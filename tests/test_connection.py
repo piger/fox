@@ -50,6 +50,7 @@ async def _test_run_command():
     )
 
     env.use_ssh_config = False
+    env.use_known_hosts = False
     conn = Connection("localhost", "pippo", SSH_SERVER_PORT,
                       private_key=key)
     result = await conn._run("uname -a", cd="/tmp")
