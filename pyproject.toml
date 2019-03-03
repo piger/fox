@@ -7,7 +7,7 @@ license = "BSD-2-Clause"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-asyncssh = "^1.15"
+asyncssh = { version = "^1.15", extras = ["libnacl"] }
 tqdm = "^4.31"
 dataclasses = { version = "^0.6", python = "~3.6" }
 
