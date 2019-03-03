@@ -1,6 +1,5 @@
 import os
-from collections.abc import MutableMapping
-from typing import Any
+from typing import Dict, Any, Optional
 from .sshconfig import SSHConfig
 
 
@@ -8,7 +7,7 @@ class Environment:
 
     #: The hostname of the remote server that will be used in all of the `run()`, `sudo()`
     #: and all of the other remote commands.
-    host_string = None
+    host_string: Optional[str] = None
 
     #: The terminal type to emulate when a *pty* is requested.
     term_type = "vt100"
@@ -27,28 +26,28 @@ class Environment:
     ssh_config_path = os.path.expanduser("~/.ssh/config")
 
     #: Set the password for the `sudo()` commands.
-    sudo_password = None
+    sudo_password: Optional[str] = None
 
     #: The prompt for sudo commands (do not change!).
     sudo_prompt = "sudo password:"
 
     #: The remote username.
-    username = None
+    username: Optional[str] = None
 
     #: The remote port.
-    port = None
+    port: Optional[int] = None
 
     #: The path to a OpenSSH private key.
-    private_key = None
+    private_key: Optional[str] = None
 
 
 #: Global configuration object.
 env = Environment()
 
-_ssh_config = None
+_ssh_config: Optional[SSHConfig] = None
 
 
-def options_to_connect(hostname):
+def options_to_connect(hostname: str) -> Dict[str, Any]:
     """Returns all the SSH options needed to connect to `hostname`"""
 
     # these options will override the ones from ssh_config

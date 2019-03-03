@@ -170,7 +170,7 @@ class Connection:
         :param command: the command line string to execute.
         :param pty: wether to request a remote pty.
         :param cd: the optional name of the directory where the command will be executed.
-        :param environ: an optional dictionary containing environment variables to set when 
+        :param environ: an optional dictionary containing environment variables to set when
          executing the command.
         """
         print(f"*{self.nickname}* Running: {command}")
