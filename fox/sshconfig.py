@@ -2,11 +2,12 @@ import re
 import os
 import socket
 import getpass
+from typing import Dict, Any
 from fnmatch import fnmatch
 
 
 class Error(Exception):
-    pass
+    """An error encountered while parsing a OpenSSH configuration file"""
 
 
 SSH_EXPAND_OPTIONS = ["proxycommand", "controlpath"]
@@ -66,10 +67,14 @@ class SSHOptions:
 
 
 class SSHConfig:
+    """Parse a OpenSSH configuration file and lookup SSH options for connecting to a given host."""
+
     def __init__(self):
         self.blocks = []
 
-    def load(self, filename):
+    def load(self, filename: str):
+        """Load and parse a OpenSSH configuration file."""
+
         with open(filename) as fd:
             sshopt = None
 
@@ -95,7 +100,9 @@ class SSHConfig:
             if sshopt is not None:
                 self.blocks.append(sshopt)
 
-    def lookup(self, nickname):
+    def lookup(self, nickname: str) -> Dict[str, Any]:
+        """Lookup SSH options for connecting to the server `nickname`."""
+
         options = {}
 
         for block in self.blocks:

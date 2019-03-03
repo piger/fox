@@ -20,21 +20,29 @@ def sudo(command, pty=False, cd=None) -> CommandResult:
 
 
 def get(remotefile, localfile):
+    """Download a file from the remote server."""
+
     c = _get_connection(env.host_string)
     c.get(remotefile, localfile)
 
 
 def put(localfile, remotefile):
+    """Upload a local file to a remote server."""
+
     c = _get_connection(env.host_string)
     c.put(localfile, remotefile)
 
 
 def read(remotefile) -> bytes:
+    """Read the contents of a remote file."""
+
     c = _get_connection(env.host_string)
     return c.read(remotefile)
 
 
 def file_exists(remotefile) -> bool:
+    """Check if a file exists on the remote server."""
+
     c = _get_connection(env.host_string)
     return c.file_exists(remotefile)
 
@@ -71,5 +79,7 @@ async def _local(command, **kwargs) -> CommandResult:
 
 
 def local(command, cd=None) -> CommandResult:
+    """Execute `command` on the local machine."""
+
     kwargs = {"cd": cd}
     return run_in_loop(_local(command, **kwargs))
