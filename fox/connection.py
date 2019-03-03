@@ -132,8 +132,7 @@ class Connection:
             command = 'cd "{}" && {}'.format(cd, command)
 
         env_command = prepare_environment(environ)
-        # XXX
-        log.debug(f"env_command = {env_command}")
+        log.debug(f"*{self.nickname}* environment for command: {env_command}")
 
         if sudo:
             command = f"{env_command}{command}"
@@ -141,8 +140,7 @@ class Connection:
         else:
             command = f"{env_command}{command}"
 
-        # XXX
-        log.debug(f"command = {command}")
+        log.debug(f"*{self.nickname}* final command: {command}")
 
         args = {}
         if pty:
@@ -182,9 +180,10 @@ class Connection:
 
         args = {
             "username": self.username,
-            # XXX handle known_hosts !
-            "known_hosts": None,
         }
+
+        if env.use_known_hosts is False:
+            args["known_hosts"] = None
 
         if self.tunnel:
             log.info(f"Connecting to tunnel {self.tunnel}")
@@ -227,7 +226,6 @@ class Connection:
         sftp_client = await self.get_sftp_client()
 
         try:
-            # do something with `progress_handler` to show a progress bar
             size = await sftp_client.getsize(remotefile)
 
             # from https://asyncssh.readthedocs.io/en/latest/api.html#asyncssh.SFTPClient.get

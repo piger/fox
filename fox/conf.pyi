@@ -6,6 +6,7 @@ class Environment:
     term_type: str
     term_size: Tuple[int, int]
     use_ssh_config: bool
+    use_known_hosts: bool
     ssh_config_path: str
     sudo_password: Optional[str]
     sudo_prompt: str

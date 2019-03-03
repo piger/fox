@@ -36,6 +36,7 @@ env = Environment(
         "term_type": "vt100",
         "term_size": (80, 24),
         "use_ssh_config": True,
+        "use_known_hosts": True,
         "ssh_config_path": os.path.expanduser("~/.ssh/config"),
         "sudo_password": None,
         "sudo_prompt": "sudo password:",
