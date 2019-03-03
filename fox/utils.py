@@ -6,12 +6,26 @@ from dataclasses import dataclass
 
 @dataclass
 class CommandResult:
+
+    #: The command that was executed.
     command: str
+
+    #: The actual command that was executed, including all the `cd` and `env` prefixes.
     actual_command: str
+
+    #: The exit code of the executed command.
     exit_code: int
+
+    #: The (partial) *stdout* output of the executed command.
     stdout: str
+
+    #: The (partial) *stderr* output of the executed command.
     stderr: str
+
+    #: The hostname of the server where the command was executed.
     hostname: str
+
+    #: Wether the command was executed with sudo.
     sudo: bool = False
 
     # NOTE: when running in a pty there is no stderr!

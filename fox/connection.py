@@ -36,17 +36,17 @@ atexit.register(_clean_connections)
 
 
 class Connection:
-    """
-    A SSH connection to a remote server.
+    """A SSH connection to a remote server.
 
-    What do we need to connect to a server:
-    - hostname
-    - port (optional)
-    - username (optional, defaults to local user)
-    - password (optional)
-    - private key (optional)
-    - path to agent (asyncssh read "$SSH_AUTH_SOCK" by default)
-    - ProxyJump or ProxyCommand (!!!)
+    :param hostname: hostname of the remote server.
+    :param username: the username used to log into the remote server.
+    :param port: the optional port for connecting to the remote server (default: 22).
+    :param private_key: the optional path to a OpenSSH private key.
+    :param password: the optional password used to authenticate to the remote server.
+    :param agent_path: the optional path to a OpenSSH agent socket.
+    :param tunnel: the optional hostname of another server that will be used as tunnel.
+    :param nickname: the hostname of the server as passed on the command line (could be different
+     from the real hostname configured in `~/.ssh/config`).
     """
 
     def __init__(
@@ -165,6 +165,14 @@ class Connection:
 
     # use the event loop
     def run(self, command, pty=True, cd=None, environ=None) -> CommandResult:
+        """Execute a command on the remote server.
+
+        :param command: the command line string to execute.
+        :param pty: wether to request a remote pty.
+        :param cd: the optional name of the directory where the command will be executed.
+        :param environ: an optional dictionary containing environment variables to set when 
+         executing the command.
+        """
         print(f"*{self.nickname}* Running: {command}")
         kwargs = {"pty": pty, "cd": cd, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
