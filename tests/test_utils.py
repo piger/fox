@@ -5,6 +5,7 @@ def test_split_lines():
     tests = [
         ("ciao\na\nte", (["ciao", "a"], "te")),
         ("ciao\na\nte\n", (["ciao", "a", "te"], "")),
+        ("ciao", ([], "ciao")),
     ]
 
     for data, expected in tests:
