@@ -38,10 +38,10 @@ async def _test_run_command():
         capture["command"] = process.command
         process.exit(0)
 
-    key = asyncssh.generate_private_key("ssh-ed25519")
+    key = asyncssh.generate_private_key("ssh-rsa")
     pubkey = key.convert_to_public()
 
-    server_key = asyncssh.generate_private_key("ssh-ed25519")
+    server_key = asyncssh.generate_private_key("ssh-rsa")
     server_pubkey = server_key.convert_to_public()
 
     server = await asyncssh.create_server(
