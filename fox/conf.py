@@ -4,48 +4,46 @@ from typing import Any
 from .sshconfig import SSHConfig
 
 
-class Environment(MutableMapping):
-    def __init__(self, *args, **kwargs):
-        self._storage = dict(*args, **kwargs)
+class Environment:
 
-    def __getitem__(self, key: str) -> Any:
-        return self._storage[key]
+    #: The hostname of the remote server that will be used in all of the `run()`, `sudo()`
+    #: and all of the other remote commands.
+    host_string = None
 
-    def __setitem__(self, key: str, value: Any) -> None:
-        self._storage[key] = value
+    #: The terminal type to emulate when a *pty* is requested.
+    term_type = "vt100"
 
-    def __delitem__(self, key):
-        del self._storage[key]
+    #: The size of the emulated terminal when a *pty* is requested.
+    term_size = (80, 24)
 
-    def __iter__(self):
-        return iter(self._storage)
+    #: Set to `True` to enable the loading of `~/.ssh/config`.
+    use_ssh_config = True
 
-    def __len__(self) -> int:
-        return len(self._storage)
+    #: Set to `True` to respect the contents of `~/.ssh/known_hosts` and enable the fingerprint
+    # verification.
+    use_known_hosts = True
 
-    def __getattr__(self, key) -> Any:
-        if key in self._storage:
-            return self._storage[key]
+    #: Set the path to the OpenSSH configuration file.
+    ssh_config_path = os.path.expanduser("~/.ssh/config")
 
-        raise NotImplementedError()
+    #: Set the password for the `sudo()` commands.
+    sudo_password = None
+
+    #: The prompt for sudo commands (do not change!).
+    sudo_prompt = "sudo password:"
+
+    #: The remote username.
+    username = None
+
+    #: The remote port.
+    port = None
+
+    #: The path to a OpenSSH private key.
+    private_key = None
 
 
-env = Environment(
-    {
-        "host_string": None,
-        "term_type": "vt100",
-        "term_size": (80, 24),
-        "use_ssh_config": True,
-        "use_known_hosts": True,
-        "ssh_config_path": os.path.expanduser("~/.ssh/config"),
-        "sudo_password": None,
-        "sudo_prompt": "sudo password:",
-        "username": None,
-        "port": None,
-        "private_key": None,
-    }
-)
-
+#: Global configuration object.
+env = Environment()
 
 _ssh_config = None
 
