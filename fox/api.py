@@ -86,24 +86,26 @@ def local(command, cd=None) -> CommandResult:
 
 
 def run_concurrent(hosts, command, limit=0):
+    """Execute `command` on `hosts` concurrently."""
+
     return run_in_loop(_run_concurrent(hosts, command, limit))
 
 
-async def _run_concurrent(hosts, command, limit=0):
+async def _run_concurrent(hosts, command, pty=False, cd=None, limit=0):
     conns = [_get_connection(host) for host in hosts]
-    results = []
+    futures_done = []
 
     aws = set()
     while conns:
         conn = conns.pop(0)
-        aws.add(asyncio.ensure_future(conn._run(command)))
+        aws.add(asyncio.ensure_future(conn._run(command, pty=pty, cd=cd)))
         if limit and len(aws) >= limit:
             done, pending = await asyncio.wait(aws, return_when=asyncio.FIRST_COMPLETED)
             aws = pending
-            results.extend(done)
+            futures_done.extend(done)
 
     if len(aws):
         done, pending = await asyncio.wait(aws, return_when=asyncio.ALL_COMPLETED)
-        results.extend(done)
+        futures_done.extend(done)
 
-    return results
+    return [future.result() for future in futures_done]

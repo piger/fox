@@ -22,6 +22,8 @@ API Methods
 
 .. autofunction:: run
 
+.. autofunction:: run_concurrent
+
 .. autofunction:: sudo
 
 .. autofunction:: get
