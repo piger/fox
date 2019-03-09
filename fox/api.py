@@ -83,3 +83,27 @@ def local(command, cd=None) -> CommandResult:
 
     kwargs = {"cd": cd}
     return run_in_loop(_local(command, **kwargs))
+
+
+def run_concurrent(hosts, command, limit=0):
+    return run_in_loop(_run_concurrent(hosts, command, limit))
+
+
+async def _run_concurrent(hosts, command, limit=0):
+    conns = [_get_connection(host) for host in hosts]
+    results = []
+
+    aws = set()
+    while conns:
+        conn = conns.pop(0)
+        aws.add(asyncio.ensure_future(conn._run(command)))
+        if limit and len(aws) >= limit:
+            done, pending = await asyncio.wait(aws, return_when=asyncio.FIRST_COMPLETED)
+            aws = pending
+            results.extend(done)
+
+    if len(aws):
+        done, pending = await asyncio.wait(aws, return_when=asyncio.ALL_COMPLETED)
+        results.extend(done)
+
+    return results
