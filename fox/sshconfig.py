@@ -94,7 +94,7 @@ class SSHConfig:
                 if sshopt is None:
                     raise Error("Error: expected to be in a 'Host' block!")
                 key, value = line.split(" ", 1)
-                key = key.lower()
+                key = key.strip().lower()
                 sshopt.set_option(key, value)
 
             if sshopt is not None:
