@@ -26,10 +26,7 @@ class SSHServer(asyncssh.SSHServer):
         return True
 
 
-async def _test_run_command():
-    def _server_factory():
-        return SSHServer()
-
+def make_process_factory():
     capture = {}
 
     def _process_factory(process):
@@ -38,25 +35,32 @@ async def _test_run_command():
         capture["command"] = process.command
         process.exit(0)
 
-    key = asyncssh.generate_private_key("ssh-rsa")
-    pubkey = key.convert_to_public()
+    return capture, _process_factory
 
+
+def server_factory():
+    return SSHServer()
+
+
+async def _test_run_command():
+    capture, process_factory = make_process_factory()
+
+    key = asyncssh.generate_private_key("ssh-rsa")
     server_key = asyncssh.generate_private_key("ssh-rsa")
-    server_pubkey = server_key.convert_to_public()
 
     server = await asyncssh.create_server(
-        _server_factory, host="127.0.0.1", port=SSH_SERVER_PORT, server_host_keys=[server_key],
-        process_factory=_process_factory,
+        server_factory, host="127.0.0.1", port=SSH_SERVER_PORT, server_host_keys=[server_key],
+        process_factory=process_factory,
     )
 
     env.use_ssh_config = False
     env.use_known_hosts = False
-    conn = Connection("localhost", "pippo", SSH_SERVER_PORT,
-                      private_key=key)
+    conn = Connection("localhost", "pippo", SSH_SERVER_PORT, private_key=key)
     result = await conn._run("uname -a", cd="/tmp")
     assert capture["command"] == """cd "/tmp" && uname -a"""
     server.close()
+    return True
 
 
 def test_run_command(event_loop):
-    event_loop.run_until_complete(_test_run_command())
+    assert event_loop.run_until_complete(_test_run_command()) is True
