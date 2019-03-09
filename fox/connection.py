@@ -101,6 +101,11 @@ class Connection:
             if rest.endswith(env.sudo_prompt):
                 print(f"[{self.nickname}] {rest}")
 
+                # we need to handle sudo erroring because the password was wrong
+                if lines[-1] == "Sorry, try again.":
+                    print("Unsetting env.sudo_password")
+                    env.sudo_password = None
+
                 if env.sudo_password is None:
                     env.sudo_password = getpass.getpass("Need password for sudo: ")
                 writer.write(f"{env.sudo_password}\n")
