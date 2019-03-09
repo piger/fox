@@ -184,7 +184,7 @@ class Connection:
         return run_in_loop(self._run(command, **kwargs))
 
     async def _connect(self):
-        log.info(f"Connecting to {self.hostname}")
+        log.info(f"Connecting to {self.hostname}:{self.port}")
 
         args = {
             "username": self.username,
@@ -206,6 +206,8 @@ class Connection:
         elif self.private_key:
             args["client_keys"] = [self.private_key]
 
+        # this may throw several exceptions:
+        # asyncssh.misc.HostKeyNotVerifiable: Host key is not trusted
         self._connection = await asyncssh.connect(self.hostname, self.port, **args)
 
     # use the event loop
