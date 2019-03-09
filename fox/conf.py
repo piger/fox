@@ -72,6 +72,8 @@ def options_to_connect(hostname: str) -> Dict[str, Any]:
 
     # NOTE: we're updateing ssh_options with whatever was specified in `env`. By default all the
     # `env` variables that can affect this configuration are set to `None`.
+    # ... but we have to keep "hostname" from ssh_config!
+    options_from_env.pop("hostname")
     ssh_options.update(options_from_env)
 
     return ssh_options
