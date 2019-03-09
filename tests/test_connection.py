@@ -49,7 +49,10 @@ async def _test_run_command():
     server_key = asyncssh.generate_private_key("ssh-rsa")
 
     server = await asyncssh.create_server(
-        server_factory, host="127.0.0.1", port=SSH_SERVER_PORT, server_host_keys=[server_key],
+        server_factory,
+        host="127.0.0.1",
+        port=SSH_SERVER_PORT,
+        server_host_keys=[server_key],
         process_factory=process_factory,
     )
 

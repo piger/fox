@@ -191,9 +191,7 @@ class Connection:
     async def _connect(self):
         log.info(f"Connecting to {self.hostname}:{self.port}")
 
-        args = {
-            "username": self.username,
-        }
+        args = {"username": self.username}
 
         if env.use_known_hosts is False:
             args["known_hosts"] = None

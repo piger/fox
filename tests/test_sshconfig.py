@@ -12,4 +12,4 @@ def test_match():
     ]
 
     for hostname, patterns, result in tests:
-        assert(match(hostname, patterns) == result)
+        assert match(hostname, patterns) == result
