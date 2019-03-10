@@ -363,7 +363,9 @@ def _get_connection(name=None, use_cache=True) -> Connection:
 
     # NOTE: we only cache connections created here, and maybe the tunnels.
     # maybe by default we should not re-use the tunnels, as the default behavior of SSH
-    c = Connection(ssh_options["hostname"], ssh_options["user"], ssh_options["port"], **args)
+    c = Connection(
+        ssh_options["hostname"], ssh_options["user"], ssh_options["port"], nickname=name, **args
+    )
     if use_cache:
         _connections_cache[name] = c
     return c
