@@ -57,7 +57,5 @@ You can also use Cluster mode when you want to run the same command on several h
 from fox.cluster import Cluster
 
 cluster = Cluster("app1.example.com", "app2.example.com", "app3.example.com")
-cluster.run("sleep $((1 + RANDOM % 5)) && hostname")
+cluster.run("sleep $((1 + RANDOM % 5)) && hostname", limit=2)
 ```
-
-**NOTE** throttling still has to be implemented. All the commands will be run at once.
