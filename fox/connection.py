@@ -169,7 +169,7 @@ class Connection:
         )
 
     # use the event loop
-    def run(self, command, pty=True, cd=None, environ=None) -> CommandResult:
+    def run(self, command, pty=True, cd=None, environ=None, echo=True) -> CommandResult:
         """Execute a command on the remote server.
 
         :param command: the command line string to execute.
@@ -177,13 +177,25 @@ class Connection:
         :param cd: the optional name of the directory where the command will be executed.
         :param environ: an optional dictionary containing environment variables to set when
          executing the command.
+        :param echo: set to `False` to hide the output of the command.
         """
+
         print(f"*{self.nickname}* Running: {command}")
         kwargs = {"pty": pty, "cd": cd, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
 
     # use the event loop
-    def sudo(self, command, pty=True, cd=None, environ=None) -> CommandResult:
+    def sudo(self, command, pty=True, cd=None, environ=None, echo=True) -> CommandResult:
+        """Execute a command with sudo on the remote server.
+
+        :param command: the command line string to execute.
+        :param pty: wether to request a remote pty.
+        :param cd: the optional name of the directory where the command will be executed.
+        :param environ: an optional dictionary containing environment variables to set when
+         executing the command.
+        :param echo: set to `False` to hide the output of the command.
+        """
+
         print(f"*{self.nickname}* - Sudo: {command}")
         kwargs = {"pty": pty, "cd": cd, "sudo": True, "environ": environ}
         return run_in_loop(self._run(command, **kwargs))
@@ -215,6 +227,8 @@ class Connection:
 
     # use the event loop
     def disconnect(self):
+        """Close the SSH connection to the server."""
+
         # Maybe here we should also delete ourself from the connection cache, but we don't know our
         # own "nickname"!
         if self._connection is not None:
@@ -262,6 +276,12 @@ class Connection:
 
     # use the event loop
     def get(self, remotefile, localfile):
+        """Download a file from the remote server.
+
+        :param remotefile: the path to the remote file to download.
+        :param localfile: the local path where to write the downloaded file.
+        """
+
         run_in_loop(self._get(remotefile, localfile))
 
     async def _read(self, remotefile) -> bytes:
@@ -290,6 +310,12 @@ class Connection:
 
     # use the event loop
     def read(self, remotefile) -> bytes:
+        """Read the contents of a remote file.
+
+        :param remotefile: the path of the remote file to read.
+
+        This is useful when you just want to read the contents of a remote file without downloading it.
+        """
         return run_in_loop(self._read(remotefile))
 
     async def _put(self, localfile, remotefile):
@@ -319,6 +345,12 @@ class Connection:
 
     # use the event loop
     def put(self, localfile, remotefile):
+        """Upload a local file to a remote server.
+
+        :param localfile: the path of the local file to upload.
+        :param remotefile: the path where to write the file on the remote server.
+        """
+
         run_in_loop(self._put(localfile, remotefile))
 
     async def _file_exists(self, remotefile) -> bool:
@@ -327,6 +359,11 @@ class Connection:
 
     # use the event loop
     def file_exists(self, remotefile) -> bool:
+        """Check if a file exists on the remote server.
+
+        :param remotefile: the path of the remote file that will be checked.
+        """
+
         return run_in_loop(self._file_exists(remotefile))
 
 

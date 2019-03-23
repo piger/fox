@@ -6,43 +6,75 @@ from .connection import _get_connection
 from .utils import CommandResult, read_from_stream, run_in_loop
 
 
-def run(command, pty=False, cd=None) -> CommandResult:
-    """Run a command on the current env.host_string remote host"""
+def run(command, pty=False, cd=None, environ=None, echo=True) -> CommandResult:
+    """Run a command on the current `env.host_string` remote host.
+
+    :param command: the command line string to execute.
+    :param pty: wether to request a remote pty.
+    :param cd: the optional name of the directory where the command will be executed.
+    :param environ: an optional dictionary containing environment variables to set when
+    executing the command.
+    :param echo: set to `False` to hide the output of the command.
+    """
 
     c = _get_connection(env.host_string)
     return c.run(command, pty, cd)
 
 
-def sudo(command, pty=False, cd=None) -> CommandResult:
-    """Run a command on the current env.host_string remote host with sudo"""
+def sudo(command, pty=False, cd=None, environ=None, echo=True) -> CommandResult:
+    """Run a command on the current env.host_string remote host with sudo
+
+    :param command: the command line string to execute.
+    :param pty: wether to request a remote pty.
+    :param cd: the optional name of the directory where the command will be executed.
+    :param environ: an optional dictionary containing environment variables to set when
+    executing the command.
+    :param echo: set to `False` to hide the output of the command.
+    """
 
     c = _get_connection(env.host_string)
     return c.sudo(command, pty, cd)
 
 
 def get(remotefile, localfile):
-    """Download a file from the remote server."""
+    """Download a file from the remote server.
+
+    :param remotefile: the path to the remote file to download.
+    :param localfile: the local path where to write the downloaded file.
+    """
 
     c = _get_connection(env.host_string)
     c.get(remotefile, localfile)
 
 
 def put(localfile, remotefile):
-    """Upload a local file to a remote server."""
+    """Upload a local file to a remote server.
+
+    :param localfile: the path of the local file to upload.
+    :param remotefile: the path where to write the file on the remote server.
+    """
 
     c = _get_connection(env.host_string)
     c.put(localfile, remotefile)
 
 
 def read(remotefile) -> bytes:
-    """Read the contents of a remote file."""
+    """Read the contents of a remote file.
+
+    :param remotefile: the path of the remote file to read.
+
+    This is useful when you just want to read the contents of a remote file without downloading it.
+    """
 
     c = _get_connection(env.host_string)
     return c.read(remotefile)
 
 
 def file_exists(remotefile) -> bool:
-    """Check if a file exists on the remote server."""
+    """Check if a file exists on the remote server.
+
+    :param remotefile: the path of the remote file that will be checked.
+    """
 
     c = _get_connection(env.host_string)
     return c.file_exists(remotefile)
@@ -87,14 +119,28 @@ async def _local(command, environ=None, env_inherit=True, **kwargs) -> CommandRe
     )
 
 
-def local(command, cd=None, environ=None) -> CommandResult:
-    """Execute `command` on the local machine."""
+def local(command, cd=None, environ=None, env_inherit=True) -> CommandResult:
+    """Execute `command` on the local machine.
 
-    return run_in_loop(_local(command, cd=cd, environ=environ))
+    :param command: the command line string to execute.
+    :param cd: the optional name of the directory where the command will be executed.
+    :param environ: an optional dictionary containing environment variables to set when
+    executing the command.
+    :param env_inherit: set to `False` when you also specify `env` to execute the process in a new
+    blank environment.
+    """
+
+    return run_in_loop(_local(command, cd=cd, environ=environ, env_inherit=env_inherit))
 
 
 def run_concurrent(hosts, command, limit=0):
-    """Execute `command` on `hosts` concurrently."""
+    """Execute `command` on `hosts` concurrently.
+
+    :param hosts: a list of hosts where to run `command`.
+    :param command: the command line string to execute.
+    :param limit: limit the concurrent execution to `limit` hosts; set to `0` to execute on all the
+    hosts at once.
+    """
 
     return run_in_loop(_run_concurrent(hosts, command, limit))
 
