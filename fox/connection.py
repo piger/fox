@@ -314,7 +314,8 @@ class Connection:
 
         :param remotefile: the path of the remote file to read.
 
-        This is useful when you just want to read the contents of a remote file without downloading it.
+        This is useful when you just want to read the contents of a remote file without downloading
+        it.
         """
         return run_in_loop(self._read(remotefile))
 
