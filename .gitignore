@@ -3,3 +3,5 @@
 *~
 /pip-wheel-metadata/
 /.mypy_cache/
+/docs/_build/
+/.redo/

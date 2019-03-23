@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Simple API to run commands on remote servers."
 authors = ["Daniel Kertesz <daniel@spatof.org>"]
 license = "BSD-2-Clause"
+readme = "README.md"
+keywords = ["automation", "ssh", "fabric"]
+repository = "https://github.com/piger/fox"
 
 [tool.poetry.dependencies]
 python = "^3.6"
