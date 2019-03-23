@@ -1,7 +1,6 @@
 # 🦊 (Fox)
 
 [![Build Status](https://travis-ci.org/piger/fox.svg?branch=master)](https://travis-ci.org/piger/fox)
-
 [![Documentation Status](https://readthedocs.org/projects/fox-py/badge/?version=latest)](https://fox-py.readthedocs.io/en/latest/?badge=latest)
 
 🦊 (Fox) is an _experimental_ alternative implementation of _some_ of the
