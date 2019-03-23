@@ -1,3 +1,4 @@
+import os
 import asyncio
 import shlex
 from .conf import env
@@ -47,19 +48,27 @@ def file_exists(remotefile) -> bool:
     return c.file_exists(remotefile)
 
 
-async def _local(command, **kwargs) -> CommandResult:
+async def _local(command, environ=None, env_inherit=True, **kwargs) -> CommandResult:
     args = {
         "cwd": kwargs.get("cd"),
         "stdout": asyncio.subprocess.PIPE,
         "stderr": asyncio.subprocess.PIPE,
     }
+
+    if env is not None:
+        process_env = {}
+        if env_inherit:
+            process_env.update(os.environ)
+        process_env.update(environ)
+        args["env"] = environ
+
     label = "*local*"
     original_command = command
     cmdline = shlex.split(command)
 
-    # NOTES:
-    # - this must not be called with shell=True; see:
     # https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.subprocess_exec
+    # All other keyword arguments are passed to subprocess.Popen without interpretation, except for
+    # bufsize, universal_newlines and shell, which should not be specified at all.
     proc = await asyncio.create_subprocess_exec(*cmdline, **args)  # type: ignore
     stdout, stderr = await asyncio.gather(
         read_from_stream(proc.stdout, proc.stdin, label, decode=True),
@@ -78,11 +87,10 @@ async def _local(command, **kwargs) -> CommandResult:
     )
 
 
-def local(command, cd=None) -> CommandResult:
+def local(command, cd=None, environ=None) -> CommandResult:
     """Execute `command` on the local machine."""
 
-    kwargs = {"cd": cd}
-    return run_in_loop(_local(command, **kwargs))
+    return run_in_loop(_local(command, cd=cd, environ=environ))
 
 
 def run_concurrent(hosts, command, limit=0):
