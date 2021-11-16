@@ -23,5 +23,5 @@ sphinx_rtd_theme = {version = "^0.4.3",optional = true}
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
