@@ -5,3 +5,4 @@
 /.mypy_cache/
 /docs/_build/
 /.redo/
+/venv/

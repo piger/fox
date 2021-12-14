@@ -10,13 +10,6 @@ from fox.utils import run_in_loop
 SSH_SERVER_PORT = 30123
 
 
-@pytest.fixture
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
-
 class SSHServer(asyncssh.SSHServer):
     def begin_auth(self, username):
         # no auth required
@@ -42,7 +35,8 @@ def server_factory():
     return SSHServer()
 
 
-async def _test_run_command():
+@pytest.mark.asyncio
+async def test_run_command():
     capture, process_factory = make_process_factory()
 
     key = asyncssh.generate_private_key("ssh-rsa")
@@ -63,7 +57,3 @@ async def _test_run_command():
     assert capture["command"] == """cd "/tmp" && uname -a"""
     server.close()
     return True
-
-
-def test_run_command(event_loop):
-    assert event_loop.run_until_complete(_test_run_command()) is True

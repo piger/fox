@@ -9,19 +9,20 @@ keywords = ["automation", "ssh", "fabric"]
 repository = "https://github.com/piger/fox"
 
 [tool.poetry.dependencies]
-python = "^3.6"
-asyncssh = { version = "^1.15", extras = ["libnacl"] }
+python = "^3.7"
+asyncssh = { version = "^2.8", extras = ["libnacl"] }
 tqdm = "^4.31"
 dataclasses = { version = "^0.6", python = "~3.6" }
 
 [tool.poetry.dev-dependencies]
-pytest = "^4.3"
+pytest = "^6.2"
 sphinx = {version = "^1.8",optional = true}
 sphinx_rtd_theme = {version = "^0.4.3",optional = true}
+pytest-asyncio = "^0.16.0"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

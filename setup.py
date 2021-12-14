@@ -9,7 +9,7 @@ setup(
     author_email="daniel@spatof.org",
     url="https://github.com/piger/fox",
     license="BSD-2-Clause",
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=["asyncssh[libnacl]", "tqdm", "dataclasses;python_version<'3.7'"],
     tests_require=["pytest"],
     extras_require={
