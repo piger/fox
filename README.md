@@ -1,5 +1,6 @@
 # 🦊 (Fox)
 
+![tests](https://github.com/piger/fox/actions/workflows/test.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/fox-py/badge/?version=latest)](https://fox-py.readthedocs.io/en/latest/?badge=latest)
 
 🦊 (Fox) is an _experimental_ alternative implementation of _some_ of the
