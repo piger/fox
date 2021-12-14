@@ -4,12 +4,13 @@ on:
     branches:
       - master
   pull_request:
+
 jobs:
   ci:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10"]
         os: [ubuntu-20.04, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:

@@ -9,7 +9,7 @@ keywords = ["automation", "ssh", "fabric"]
 repository = "https://github.com/piger/fox"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 asyncssh = { version = "^1.15", extras = ["libnacl"] }
 tqdm = "^4.31"
 dataclasses = { version = "^0.6", python = "~3.6" }
